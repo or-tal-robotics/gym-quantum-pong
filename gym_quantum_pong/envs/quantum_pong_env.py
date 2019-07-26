@@ -3,9 +3,9 @@ import numpy as np
 from gym import error, spaces, utils
 from gym.utils import seeding
 from gym_quantum_pong.envs.quantum_pong import QuantumPong
-N_DISCRETE_ACTIONS = 5
+N_DISCRETE_ACTIONS = 3
 PI = np.pi
-HEIGHT, WIDTH, N_CHANNELS = 40, 40, 1
+HEIGHT, WIDTH, N_CHANNELS = 84, 84, 1
 
 
 class QuantumPongEnv(gym.Env):
@@ -16,15 +16,15 @@ class QuantumPongEnv(gym.Env):
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
         self.action_dictionary = {
                 0: [0,0,0],
-                1: [1,0,0],
-                2: [2,0,0],
-                3: [0,1,PI/2],
-                4: [-1,0,0],
-                5: [-2,0,0],
-                6: [0,1,PI/4],
-                7: [0,1,0],
-                8: [0,1,PI/3],
-                9: [0,1,PI/6]}
+                1: [3,0,0],
+                2: [-3,0,0],
+                3: [2,0,0],
+                4: [-2,0,0],
+                5: [0,1,0.1*0.5*np.pi],
+                6: [0,1,0.3*0.5*np.pi],
+                7: [0,1,0.6*0.5*np.pi],
+                8: [0,1,0.7*0.5*np.pi],
+                9: [0,1,0.8*0.5*np.pi]}
         self.QP = QuantumPong()
         self.done = False
         self.reward = 0
@@ -32,11 +32,11 @@ class QuantumPongEnv(gym.Env):
     def get_reward(self):
         reward = 0.0
         if self.QP.ball_pos[1] > self.QP.bat_pos_B[1]:
-            reward = 1.0
+            reward = 0
         if self.QP.ball_pos[1] < self.QP.bat_pos_A[1]:
-            reward = -1.0    
+            reward = -1   
         if self.QP.ball_pos[0] >= self.QP.bat_pos_A[0] - 2 and self.QP.ball_pos[0] <= self.QP.bat_pos_A[0] + 2 and self.QP.ball_pos[1] <= self.QP.bat_pos_A[1] :
-            reward = 0.1
+            reward = 0
         return reward
         
 
@@ -44,17 +44,17 @@ class QuantumPongEnv(gym.Env):
         self.QP = QuantumPong()
         self.QP._update_board()
         self.done = False
-        self.reward = 0
+        self.reward = 0.0
         return np.expand_dims(self.QP.board, axis=2).astype(np.uint8)
         
     def step(self, action):
         if self.done == True:
             self.__init__()
         reward = 0
-        score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action])
+        score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action], n_steps = 1)
         observation = np.expand_dims(observation, axis=2).astype(np.uint8)
         if hit == True:
-            reward = 0.1
+            reward = 0
         if win == 1:
             reward = 1
         if win == -1:
