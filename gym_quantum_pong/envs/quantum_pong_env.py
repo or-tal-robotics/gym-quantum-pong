@@ -17,14 +17,7 @@ class QuantumPongEnv(gym.Env):
         self.action_dictionary = {
                 0: [0,0,0],
                 1: [3,0,0],
-                2: [-3,0,0],
-                3: [2,0,0],
-                4: [-2,0,0],
-                5: [0,1,0.1*0.5*np.pi],
-                6: [0,1,0.3*0.5*np.pi],
-                7: [0,1,0.6*0.5*np.pi],
-                8: [0,1,0.7*0.5*np.pi],
-                9: [0,1,0.8*0.5*np.pi]}
+                2: [-3,0,0]}
         self.QP = QuantumPong()
         self.done = False
         self.reward = 0
@@ -54,11 +47,11 @@ class QuantumPongEnv(gym.Env):
         score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action], n_steps = 1)
         observation = np.expand_dims(observation, axis=2).astype(np.uint8)
         if hit == True:
-            reward = 0
-        if win == 1:
             reward = 1
+        if win == 1:
+            reward = 10
         if win == -1:
-            reward = -1
+            reward = -10
         self.reward += reward    
         return observation, np.float32(reward), self.done, {}
     
