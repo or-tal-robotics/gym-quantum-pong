@@ -11,7 +11,7 @@ HEIGHT, WIDTH, N_CHANNELS = 84, 84, 1
 class QuantumPongEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self):
-        self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
+        self.action_space = spaces.MultiDiscrete([N_DISCRETE_ACTIONS,N_DISCRETE_ACTIONS])
         self.observation_space = spaces.Box(low=0, high=255, shape=
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
         self.action_dictionary = {
@@ -25,11 +25,13 @@ class QuantumPongEnv(gym.Env):
     def get_reward(self):
         reward = 0.0
         if self.QP.ball_pos[1] > self.QP.bat_pos_B[1]:
-            reward = 0
+            reward = [1,-1]
         if self.QP.ball_pos[1] < self.QP.bat_pos_A[1]:
-            reward = -1   
+            reward = [-1,1]   
         if self.QP.ball_pos[0] >= self.QP.bat_pos_A[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_A[0] + 5 and self.QP.ball_pos[1] <= self.QP.bat_pos_A[1] :
-            reward = 1
+            reward = [1,0]
+        if self.QP.ball_pos[0] >= self.QP.bat_pos_B[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_B[0] + 5 and self.QP.ball_pos[1] >= self.QP.bat_pos_B[1] :
+            reward = [0,1]
         return reward
         
 
@@ -43,15 +45,17 @@ class QuantumPongEnv(gym.Env):
     def step(self, action):
         if self.done == True:
             self.__init__()
-        reward = 0
-        score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action], n_steps = 1)
+        reward = [0,0]
+        score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action[0]], self.action_dictionary[action[1]])
         observation = np.expand_dims(observation, axis=2).astype(np.uint8)
-        if hit == True:
-            reward = 1
+        if hit == 1:
+            reward = [1,0]
+        if hit == -1:
+            reward = [0,1]
         if win == 1:
-            reward = 0
+            reward = [1,-1]
         if win == -1:
-            reward = -1
+            reward = [-1,1]
         self.reward += reward    
         return observation, np.float32(reward), self.done, {}
     
