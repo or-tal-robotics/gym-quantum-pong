@@ -20,7 +20,6 @@ class QuantumPongEnv(gym.Env):
                 2: [-3,0,0]}
         self.QP = QuantumPong()
         self.done = False
-        self.reward = 0
         
     def get_reward(self):
         reward = 0.0
@@ -56,7 +55,6 @@ class QuantumPongEnv(gym.Env):
             reward = [1,-1]
         if win == -1:
             reward = [-1,1]
-        self.reward += reward    
         return observation, np.float32(reward), self.done, {}
     
 

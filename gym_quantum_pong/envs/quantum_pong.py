@@ -99,7 +99,7 @@ class QuantumPong():
             self.score[1] += 1
             self.ball_pos = np.array([self.board_size[0]/2, self.board_size[1]/2], dtype=np.uint8)
             #self.bat_pos_A[0] = self.ball_pos[0] 
-            self.ball_vel[1] = -2
+            self.ball_vel[1] = 2*(-1)**np.random.randint(0,2)
             if self.ball_vel[1] == 0:
                self.ball_vel[1] = 1
             self.ball_vel[0] = np.random.randint(-2,3)
@@ -120,7 +120,7 @@ class QuantumPong():
             self.score[0] += 1
             self.ball_pos = np.array([self.board_size[0]/2, self.board_size[1]/2], dtype=np.uint8)
             #self.bat_pos_B[0] = self.ball_pos[0]
-            self.ball_vel[1] = -2
+            self.ball_vel[1] = 2*(-1)**np.random.randint(0,2)
             if self.ball_vel[1] == 0:
                 self.ball_vel[1] = 1
             self.ball_vel[0] = np.random.randint(-2,3)
