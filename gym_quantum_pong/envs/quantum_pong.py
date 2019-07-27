@@ -70,7 +70,7 @@ class QuantumPong():
             win = 0
             # --- Single player game --- #
             if self.n_players == 1:
-                if self.n_steps % 4 == 0:
+                if self.n_steps % 6 == 0:
                     Action_B[0] = self._computer_action()
                     self.last_action =  Action_B[0]
                 else:

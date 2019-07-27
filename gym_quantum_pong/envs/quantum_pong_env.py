@@ -28,8 +28,8 @@ class QuantumPongEnv(gym.Env):
             reward = 0
         if self.QP.ball_pos[1] < self.QP.bat_pos_A[1]:
             reward = -1   
-        if self.QP.ball_pos[0] >= self.QP.bat_pos_A[0] - 2 and self.QP.ball_pos[0] <= self.QP.bat_pos_A[0] + 2 and self.QP.ball_pos[1] <= self.QP.bat_pos_A[1] :
-            reward = 0
+        if self.QP.ball_pos[0] >= self.QP.bat_pos_A[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_A[0] + 5 and self.QP.ball_pos[1] <= self.QP.bat_pos_A[1] :
+            reward = 1
         return reward
         
 
@@ -49,9 +49,9 @@ class QuantumPongEnv(gym.Env):
         if hit == True:
             reward = 1
         if win == 1:
-            reward = 10
+            reward = 0
         if win == -1:
-            reward = -10
+            reward = -1
         self.reward += reward    
         return observation, np.float32(reward), self.done, {}
     
