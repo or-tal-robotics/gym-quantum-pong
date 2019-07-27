@@ -22,11 +22,11 @@ class QuantumPongEnv(gym.Env):
         self.done = False
         
     def get_reward(self):
-        reward = 0.0
+        reward = [0,0]
         if self.QP.ball_pos[1] > self.QP.bat_pos_B[1]:
-            reward = [1,-1]
+            reward = [0,-1]
         if self.QP.ball_pos[1] < self.QP.bat_pos_A[1]:
-            reward = [-1,1]   
+            reward = [-1,0]   
         if self.QP.ball_pos[0] >= self.QP.bat_pos_A[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_A[0] + 5 and self.QP.ball_pos[1] <= self.QP.bat_pos_A[1] :
             reward = [1,0]
         if self.QP.ball_pos[0] >= self.QP.bat_pos_B[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_B[0] + 5 and self.QP.ball_pos[1] >= self.QP.bat_pos_B[1] :
@@ -38,7 +38,7 @@ class QuantumPongEnv(gym.Env):
         self.QP = QuantumPong()
         self.QP._update_board()
         self.done = False
-        self.reward = 0.0
+        self.reward = [0,0]
         return np.expand_dims(self.QP.board, axis=2).astype(np.uint8)
         
     def step(self, action):
@@ -52,9 +52,9 @@ class QuantumPongEnv(gym.Env):
         if hit == -1:
             reward = [0,1]
         if win == 1:
-            reward = [1,-1]
+            reward = [0,-1]
         if win == -1:
-            reward = [-1,1]
+            reward = [-1,0]
         return observation, np.float32(reward), self.done, {}
     
 
