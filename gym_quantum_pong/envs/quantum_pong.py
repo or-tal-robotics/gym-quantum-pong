@@ -88,12 +88,11 @@ class QuantumPong():
         if self.ball_pos[0] >= self.bat_pos_A[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_A[0] + self.bat_size and self.ball_pos[1] <= self.bat_pos_A[1] :
             self.ball_pos[1] = self.bat_pos_A[1]
             self.ball_vel[1] *= -1
-            self.ball_vel[0] *= -1
             hit = 1
             if np.random.choice(2):
-                self.ball_vel[1] = (self.ball_vel[1])*2
+                self.ball_vel[0] *= -1
             else:
-                self.ball_vel[1] = np.sign(self.ball_vel[1])
+                self.ball_vel[0] *= 1
                 
         elif self.ball_pos[1] <= self.bat_pos_A[1]:
             self.score[1] += 1
@@ -109,12 +108,11 @@ class QuantumPong():
         if self.ball_pos[0] >= self.bat_pos_B[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_B[0] + self.bat_size and self.ball_pos[1] >= self.bat_pos_B[1] :
             self.ball_pos[1] = self.bat_pos_B[1]
             self.ball_vel[1] *= -1
-            self.ball_vel[0] *= -1
             hit = -1
             if np.random.choice(2):
-                self.ball_vel[1] = (self.ball_vel[1])*2
+                self.ball_vel[0] *= -1
             else:
-                self.ball_vel[1] = np.sign(self.ball_vel[1])
+                self.ball_vel[0] *= 1
            
         elif self.ball_pos[1] >= self.bat_pos_B[1]:
             self.score[0] += 1
