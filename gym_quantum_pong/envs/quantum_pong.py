@@ -21,6 +21,9 @@ class QuantumPong():
         self.round = 0
         self.n_steps = 0
         self.last_action = 0
+        self.quantum_A = 1
+        self.quantum_i = 1
+        self.quantum_j = 1
     
     def _height(self,x):
         m = (self.board_size[2] - self.board_size[0])/self.board_size[1]
@@ -28,8 +31,8 @@ class QuantumPong():
         h = int(m*x+b)
         return h
     
-    def _draw_A(self):
-        x = np.random.binomial(1,0.5)
+    def _draw_A(self,p):
+        x = np.random.binomial(1,p)
         if x == 0:
             return 1
         else:
@@ -42,7 +45,7 @@ class QuantumPong():
             else:
                 return 1
         if side == 'B':
-            if pos > self.board_size[0]/2:
+            if pos > self._height(self.board_size[1])/2:
                 return 0
             else:
                 return 1
@@ -155,11 +158,10 @@ class QuantumPong():
                 self.ball_pos[1] = self.bat_pos_A[1]
                 self.ball_vel[1] *= -1
                 hit = 1
-                 i = self._hidden_action(self.bat_pos_A[0])
-                if np.random.choice(2):
-                    self.ball_vel[0] *= -1
-                else:
-                    self.ball_vel[0] *= 1
+                self.quantum_i = self._hidden_action(self.bat_pos_A[0],'A')
+                self.quantum_A = self._draw_A(0.5)
+                self.ball_vel[0] = self.quantum_A
+                
                     
             elif self.ball_pos[1] <= self.bat_pos_A[1]:
                 self.score[1] += 1
@@ -171,6 +173,27 @@ class QuantumPong():
                 self.ball_vel[0] = np.random.randint(-2,3)
                 self.round += 1
                 win = -1
+
+            
+            if self.ball_pos[0] >= self.bat_pos_B[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_B[0] + self.bat_size and self.ball_pos[1] >= self.bat_pos_B[1] :
+                self.ball_pos[1] = self.bat_pos_B[1]
+                self.ball_vel[1] *= -1
+                hit = -1
+                self.quantum_j = self._hidden_action(self.bat_pos_B[0],'B')
+                p = (1+C[self.quantum_i,self.quantum_j])/2
+                x = self._draw_A(p)
+                self.ball_vel[0] = x*self.quantum_A
+               
+            elif self.ball_pos[1] >= self.bat_pos_B[1]:
+                self.score[0] += 1
+                self.ball_pos = np.array([self.board_size[0]/2, self.board_size[1]/2], dtype=np.uint8)
+                #self.bat_pos_B[0] = self.ball_pos[0]
+                self.ball_vel[1] = 2*(-1)**np.random.randint(0,2)
+                if self.ball_vel[1] == 0:
+                    self.ball_vel[1] = 1
+                self.ball_vel[0] = np.random.randint(-2,3)
+                self.round += 1
+                win = 1
         
         
         if self.round == 21:

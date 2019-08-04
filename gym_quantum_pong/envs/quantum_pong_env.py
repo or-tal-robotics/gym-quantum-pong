@@ -3,7 +3,7 @@ import numpy as np
 from gym import error, spaces, utils
 from gym.utils import seeding
 from gym_quantum_pong.envs.quantum_pong import QuantumPong
-N_DISCRETE_ACTIONS = 3
+N_DISCRETE_ACTIONS = 6
 PI = np.pi
 HEIGHT, WIDTH, N_CHANNELS = 84, 84, 1
 
@@ -15,9 +15,12 @@ class QuantumPongEnv(gym.Env):
         self.observation_space = spaces.Box(low=0, high=255, shape=
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
         self.action_dictionary = {
-                0: [0,0,0],
-                1: [3,0,0],
-                2: [-3,0,0]}
+                0: [0,0],
+                1: [3,0],
+                2: [-3,0],
+                3: [0,1],
+                4: [3,1],
+                5: [-3,1]}
         self.QP = QuantumPong()
         self.done = False
         
@@ -48,13 +51,13 @@ class QuantumPongEnv(gym.Env):
         score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action[0]], self.action_dictionary[action[1]])
         observation = np.expand_dims(observation, axis=2).astype(np.uint8)
         if hit == 1:
-            reward = [1,0]
+            reward = [1,0.1]
         if hit == -1:
-            reward = [0,1]
+            reward = [0.0,1]
         if win == 1:
-            reward = [0,-1]
+            reward = [-0.1,-1]
         if win == -1:
-            reward = [-1,0]
+            reward = [-1,-0.1]
         return observation, np.float32(reward), self.done, {}
     
 
