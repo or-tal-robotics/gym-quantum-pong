@@ -24,6 +24,8 @@ class QuantumPong():
         self.quantum_A = 1
         self.quantum_i = 1
         self.quantum_j = 1
+        self.ball_memory = 0
+        self.QuantumState = 0
     
     def _height(self,x):
         m = (self.board_size[2] - self.board_size[0])/self.board_size[1]
@@ -104,10 +106,17 @@ class QuantumPong():
         if self.ball_pos[0] < 1:
             self.ball_pos[0] = 1
             self.ball_vel[0] *= -1
+            
+        if (Action_A[1] == 1 and Action_B[1] == 1):
+            self.QuantumState = 1
+            if self.ball_vel[1] < 0:
+                self.td = -1
+            else:
+                self.td = 1
+                        
+
         
-        Q = Action_A[1]*Action_B[1]
-        
-        if Q == 0:
+        if self.QuantumState == 0:
             if self.ball_pos[0] >= self.bat_pos_A[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_A[0] + self.bat_size and self.ball_pos[1] <= self.bat_pos_A[1] :
                 self.ball_pos[1] = self.bat_pos_A[1]
                 self.ball_vel[1] *= -1
@@ -148,7 +157,7 @@ class QuantumPong():
                 self.round += 1
                 win = 1
                 
-        elif Q == 1:
+        elif self.QuantumState  == 1:
             C = np.zeros((2,2))
             for i in range(2):
                 for j in range(2):
@@ -156,12 +165,18 @@ class QuantumPong():
             
             if self.ball_pos[0] >= self.bat_pos_A[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_A[0] + self.bat_size and self.ball_pos[1] <= self.bat_pos_A[1] :
                 self.ball_pos[1] = self.bat_pos_A[1]
-                self.ball_vel[1] *= -1
+                if self.td == -1:
+                    self.quantum_i = self._hidden_action(self.bat_pos_A[0],'A')
+                    self.quantum_A = self._draw_A(0.5)
+                    self.ball_vel[0] = self.quantum_A
+                elif self.td == 1:
+                    self.quantum_j = self._hidden_action(self.bat_pos_A[0],'A')
+                    p = (1+C[self.quantum_i,self.quantum_j])/2
+                    x = self._draw_A(p)
+                    self.ball_vel[0] = x*self.quantum_A
                 hit = 1
-                self.quantum_i = self._hidden_action(self.bat_pos_A[0],'A')
-                self.quantum_A = self._draw_A(0.5)
-                self.ball_vel[0] = self.quantum_A
-                
+                self.ball_memory += 1
+                self.ball_vel[1] *= -1
                     
             elif self.ball_pos[1] <= self.bat_pos_A[1]:
                 self.score[1] += 1
@@ -173,16 +188,24 @@ class QuantumPong():
                 self.ball_vel[0] = np.random.randint(-2,3)
                 self.round += 1
                 win = -1
+                self.ball_memory = 0
+                self.QuantumState = 0
 
             
             if self.ball_pos[0] >= self.bat_pos_B[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_B[0] + self.bat_size and self.ball_pos[1] >= self.bat_pos_B[1] :
                 self.ball_pos[1] = self.bat_pos_B[1]
                 self.ball_vel[1] *= -1
+                if self.td == 1:
+                    self.quantum_i = self._hidden_action(self.bat_pos_B[0],'B')
+                    self.quantum_A = self._draw_A(0.5)
+                    self.ball_vel[0] = self.quantum_A
+                elif self.td == -1:
+                    self.quantum_j = self._hidden_action(self.bat_pos_B[0],'B')
+                    p = (1+C[self.quantum_i,self.quantum_j])/2
+                    x = self._draw_A(p)
+                    self.ball_vel[0] = x*self.quantum_A
                 hit = -1
-                self.quantum_j = self._hidden_action(self.bat_pos_B[0],'B')
-                p = (1+C[self.quantum_i,self.quantum_j])/2
-                x = self._draw_A(p)
-                self.ball_vel[0] = x*self.quantum_A
+                self.ball_memory += 1
                
             elif self.ball_pos[1] >= self.bat_pos_B[1]:
                 self.score[0] += 1
@@ -194,7 +217,12 @@ class QuantumPong():
                 self.ball_vel[0] = np.random.randint(-2,3)
                 self.round += 1
                 win = 1
-        
+                self.ball_memory = 0
+                self.QuantumState = 0
+                
+            if self.ball_memory > 2:
+                self.ball_memory = 0
+                self.QuantumState = 0
         
         if self.round == 21:
             self.done = True

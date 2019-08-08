@@ -18,9 +18,7 @@ class QuantumPongEnv(gym.Env):
                 0: [0,0],
                 1: [3,0],
                 2: [-3,0],
-                3: [0,1],
-                4: [3,1],
-                5: [-3,1]}
+                3: [0,1]}
         self.QP = QuantumPong()
         self.done = False
         
