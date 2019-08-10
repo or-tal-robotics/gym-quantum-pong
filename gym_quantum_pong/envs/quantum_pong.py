@@ -107,7 +107,7 @@ class QuantumPong():
             self.ball_pos[0] = 1
             self.ball_vel[0] *= -1
             
-        if (Action_A[1] == 1 and Action_B[1] == 1):
+        if (Action_A[1] == 1 or Action_B[1] == 1):
             self.QuantumState = 1
             if self.ball_vel[1] < 0:
                 self.td = -1
