@@ -22,6 +22,8 @@ class QuantumPongEnv(gym.Env):
         self.QP = QuantumPong()
         self.done = False
         self.mode = 0
+        self.MAX_STEPS = 2000
+        self.step_count = 0
         
     def get_reward(self):
         reward = [0,0]
@@ -41,6 +43,7 @@ class QuantumPongEnv(gym.Env):
         self.QP._update_board()
         self.done = False
         self.reward = [0,0]
+        self.step_count = 0
         return np.expand_dims(self.QP.board, axis=2).astype(np.uint8)
         
     def step(self, action):
@@ -69,6 +72,10 @@ class QuantumPongEnv(gym.Env):
                 reward = [-1,-0.1]
            elif self.mode == 1:
                 reward = [-1,-1]
+        self.step_count += 1
+        if self.step_count > self.MAX_STEPS:
+            self.done = True
+            print("Game over!, too many steps!")
         return observation, np.float32(reward), self.done, {}
     
 
