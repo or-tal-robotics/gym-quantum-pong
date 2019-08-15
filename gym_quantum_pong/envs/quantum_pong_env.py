@@ -22,7 +22,7 @@ class QuantumPongEnv(gym.Env):
         self.QP = QuantumPong()
         self.done = False
         self.mode = 0
-        self.MAX_STEPS = 2000
+        self.MAX_STEPS = 50000
         self.step_count = 0
         
     def get_reward(self):
