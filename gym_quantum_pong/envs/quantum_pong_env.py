@@ -15,9 +15,9 @@ class QuantumPongEnv(gym.Env):
         self.observation_space = spaces.Box(low=0, high=255, shape=
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
         self.action_dictionary = {
-                0: [0,0],
-                1: [3,0],
-                2: [-3,0],
+                0: [0,1],
+                1: [3,1],
+                2: [-3,1],
                 3: [0,1]}
         self.QP = QuantumPong()
         self.done = False
