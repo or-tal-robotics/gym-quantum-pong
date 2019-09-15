@@ -220,7 +220,7 @@ class QuantumPong():
                 self.ball_memory = 0
                 self.QuantumState = 0
                 
-            if self.ball_memory > 2:
+            if self.ball_memory >= 2:
                 self.ball_memory = 0
                 self.QuantumState = 0
         
