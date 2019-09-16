@@ -40,16 +40,16 @@ class QuantumPong():
         else:
             return -1
         
-    def _hidden_action(self,pos, side):
+    def _hidden_action(self,Action_A, Action_B, side):
         if side == 'A':
-            if pos > self.board_size[0]/2:
+            if Action_A[1]==1:
                 return 0
-            else:
+            elif Action_A[1]==-1:
                 return 1
         if side == 'B':
-            if pos > self._height(self.board_size[1])/2:
+            if Action_B[1]==1:
                 return 0
-            else:
+            elif Action_B[1]==-1:
                 return 1
         
         
@@ -107,7 +107,7 @@ class QuantumPong():
             self.ball_pos[0] = 1
             self.ball_vel[0] *= -1
             
-        if (Action_A[1] == 1 or Action_B[1] == 1):
+        if (Action_A[1] != 0 or Action_B[1] != 0):
             self.QuantumState = 1
             if self.ball_vel[1] < 0:
                 self.td = -1
@@ -166,11 +166,11 @@ class QuantumPong():
             if self.ball_pos[0] >= self.bat_pos_A[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_A[0] + self.bat_size and self.ball_pos[1] <= self.bat_pos_A[1] :
                 self.ball_pos[1] = self.bat_pos_A[1]
                 if self.td == -1:
-                    self.quantum_i = self._hidden_action(self.bat_pos_A[0],'A')
+                    self.quantum_i = self._hidden_action(Action_A, Action_B,'A')
                     self.quantum_A = self._draw_A(0.5)
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == 1:
-                    self.quantum_j = self._hidden_action(self.bat_pos_A[0],'A')
+                    self.quantum_j = self._hidden_action(Action_A, Action_B,'A')
                     p = (1+C[self.quantum_i,self.quantum_j])/2
                     x = self._draw_A(p)
                     self.ball_vel[0] = x*self.quantum_A
@@ -196,11 +196,11 @@ class QuantumPong():
                 self.ball_pos[1] = self.bat_pos_B[1]
                 self.ball_vel[1] *= -1
                 if self.td == 1:
-                    self.quantum_i = self._hidden_action(self.bat_pos_B[0],'B')
+                    self.quantum_i = self._hidden_action(Action_A, Action_B,'B')
                     self.quantum_A = self._draw_A(0.5)
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == -1:
-                    self.quantum_j = self._hidden_action(self.bat_pos_B[0],'B')
+                    self.quantum_j = self._hidden_action(Action_A, Action_B,'B')
                     p = (1+C[self.quantum_i,self.quantum_j])/2
                     x = self._draw_A(p)
                     self.ball_vel[0] = x*self.quantum_A
