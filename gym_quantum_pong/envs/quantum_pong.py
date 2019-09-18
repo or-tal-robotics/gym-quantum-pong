@@ -4,7 +4,7 @@ import time
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (84,84,50), V = [2,2], n_rounds = 21):
+    def __init__(self, n_players = 1, board_size = (84,84,40), V = [2,2], n_rounds = 21):
         self.bat_size = 5
         self.board_size = board_size
         self.board = np.zeros((board_size[0],board_size[1]))
@@ -166,11 +166,11 @@ class QuantumPong():
             if self.ball_pos[0] >= self.bat_pos_A[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_A[0] + self.bat_size and self.ball_pos[1] <= self.bat_pos_A[1] :
                 self.ball_pos[1] = self.bat_pos_A[1]
                 if self.td == -1:
-                    self.quantum_i = self._hidden_action(Action_A, Action_B,'A')
+                    self.quantum_i = Action_A[1]
                     self.quantum_A = self._draw_A(0.5)
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == 1:
-                    self.quantum_j = self._hidden_action(Action_A, Action_B,'A')
+                    self.quantum_j = Action_A[1]
                     p = (1+C[self.quantum_i,self.quantum_j])/2
                     x = self._draw_A(p)
                     self.ball_vel[0] = x*self.quantum_A
@@ -196,11 +196,11 @@ class QuantumPong():
                 self.ball_pos[1] = self.bat_pos_B[1]
                 self.ball_vel[1] *= -1
                 if self.td == 1:
-                    self.quantum_i = self._hidden_action(Action_A, Action_B,'B')
+                    self.quantum_i = Action_B[1]
                     self.quantum_A = self._draw_A(0.5)
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == -1:
-                    self.quantum_j = self._hidden_action(Action_A, Action_B,'B')
+                    self.quantum_j = Action_B[1]
                     p = (1+C[self.quantum_i,self.quantum_j])/2
                     x = self._draw_A(p)
                     self.ball_vel[0] = x*self.quantum_A
