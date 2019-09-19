@@ -4,7 +4,7 @@ import time
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (84,84,40), V = [2,2], n_rounds = 21):
+    def __init__(self, n_players = 1, board_size = (84,84,70), V = [2,2], n_rounds = 21):
         self.bat_size = 5
         self.board_size = board_size
         self.board = np.zeros((board_size[0],board_size[1]))
