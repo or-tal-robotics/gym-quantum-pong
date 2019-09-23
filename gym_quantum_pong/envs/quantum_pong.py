@@ -26,6 +26,9 @@ class QuantumPong():
         self.quantum_j = 1
         self.ball_memory = 0
         self.QuantumState = 0
+        self.QuantumState_memory_total = 0
+        self.QuantumState_memory = 0
+        self.quantum_memory = []
     
     def _height(self,x):
         m = (self.board_size[2] - self.board_size[0])/self.board_size[1]
@@ -108,6 +111,8 @@ class QuantumPong():
             self.ball_vel[0] *= -1
             
         if (Action_A[1] != 0 or Action_B[1] != 0):
+            if self.QuantumState == 0:
+                self.QuantumState_memory += 1
             self.QuantumState = 1
             if self.ball_vel[1] < 0:
                 self.td = -1
@@ -158,6 +163,7 @@ class QuantumPong():
                 win = 1
                 
         elif self.QuantumState  == 1:
+            self.QuantumState_memory_total += 1
             C = np.zeros((2,2))
             for i in range(2):
                 for j in range(2):
@@ -171,6 +177,7 @@ class QuantumPong():
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == 1:
                     self.quantum_j = Action_A[1]
+                    self.quantum_memory.append([self.quantum_i,self.quantum_j])
                     p = (1+C[self.quantum_i,self.quantum_j])/2
                     x = self._draw_A(p)
                     self.ball_vel[0] = x*self.quantum_A
@@ -201,6 +208,7 @@ class QuantumPong():
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == -1:
                     self.quantum_j = Action_B[1]
+                    self.quantum_memory.append([self.quantum_i,self.quantum_j])
                     p = (1+C[self.quantum_i,self.quantum_j])/2
                     x = self._draw_A(p)
                     self.ball_vel[0] = x*self.quantum_A
