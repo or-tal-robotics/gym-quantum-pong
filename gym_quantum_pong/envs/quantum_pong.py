@@ -5,7 +5,7 @@ import time
 
 class QuantumPong():
     def __init__(self, n_players = 1, board_size = (84,84,70), V = [2,2], n_rounds = 21):
-        self.bat_size = 5
+        self.bat_size = 6
         self.board_size = board_size
         self.board = np.zeros((board_size[0],board_size[1]))
         self.ball_pos = np.array([board_size[0]/2, board_size[1]/2], dtype=np.uint8)
@@ -113,11 +113,11 @@ class QuantumPong():
         if (Action_A[1] != 0 or Action_B[1] != 0):
             if self.QuantumState == 0:
                 self.QuantumState_memory += 1
-            self.QuantumState = 1
-            if self.ball_vel[1] < 0:
-                self.td = -1
-            else:
-                self.td = 1
+                self.QuantumState = 1
+                if self.ball_vel[1] < 0:
+                    self.td = -1
+                else:
+                    self.td = 1
                         
 
         
@@ -163,6 +163,7 @@ class QuantumPong():
                 win = 1
                 
         elif self.QuantumState  == 1:
+#            print("QUANTUM!")
             self.QuantumState_memory_total += 1
             C = np.zeros((2,2))
             for i in range(2):
@@ -172,10 +173,12 @@ class QuantumPong():
             if self.ball_pos[0] >= self.bat_pos_A[0] - self.bat_size and self.ball_pos[0] <= self.bat_pos_A[0] + self.bat_size and self.ball_pos[1] <= self.bat_pos_A[1] :
                 self.ball_pos[1] = self.bat_pos_A[1]
                 if self.td == -1:
+                    print("QUANTUM! 0a")
                     self.quantum_i = Action_A[1]
                     self.quantum_A = self._draw_A(0.5)
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == 1:
+                    print("QUANTUM! 1a")
                     self.quantum_j = Action_A[1]
                     self.quantum_memory.append([self.quantum_i,self.quantum_j])
                     p = (1+C[self.quantum_i,self.quantum_j])/2
@@ -203,10 +206,12 @@ class QuantumPong():
                 self.ball_pos[1] = self.bat_pos_B[1]
                 self.ball_vel[1] *= -1
                 if self.td == 1:
+                    print("QUANTUM! 0b")
                     self.quantum_i = Action_B[1]
                     self.quantum_A = self._draw_A(0.5)
                     self.ball_vel[0] = self.quantum_A
                 elif self.td == -1:
+                    print("QUANTUM! 1b")
                     self.quantum_j = Action_B[1]
                     self.quantum_memory.append([self.quantum_i,self.quantum_j])
                     p = (1+C[self.quantum_i,self.quantum_j])/2

@@ -78,6 +78,20 @@ class QuantumPongEnv(gym.Env):
             print("Game over!, too many steps!")
         return observation, np.float32(reward), self.done, {}
     
+    def statistics(self):
+        M = np.array(self.QP.quantum_memory)
+        if M.shape[0] > 400:
+            C = np.empty((2,2))
+            C[0,0] = np.mean((M[:,0]==0)*(M[:,1]==0))
+            C[0,1] = np.mean((M[:,0]==0)*(M[:,1]==1))
+            C[1,0] = np.mean((M[:,0]==1)*(M[:,1]==0))
+            C[1,1] = np.mean((M[:,0]==1)*(M[:,1]==1))
+            qs = self.QP.QuantumState_memory
+            qst = self.QP.QuantumState_memory_total/self.step_count
+            return C, qs, qst
+        else:
+            return None, None, None
+    
 
          
     
