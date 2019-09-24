@@ -80,7 +80,7 @@ class QuantumPongEnv(gym.Env):
     
     def statistics(self):
         M = np.array(self.QP.quantum_memory)
-        if M.shape[0] > 400:
+        if M.shape[0] > 10:
             C = np.empty((2,2))
             C[0,0] = np.mean((M[:,0]==0)*(M[:,1]==0))
             C[0,1] = np.mean((M[:,0]==0)*(M[:,1]==1))
