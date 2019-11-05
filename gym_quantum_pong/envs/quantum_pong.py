@@ -58,17 +58,35 @@ class QuantumPong():
         
     def quantum_correlation(self, pose):
         if pose == 'left':
-            P = (1 + np.cos(self.left_player.theta - self.right_player.theta_mesured))/2
+            t1 = np.remainder(self.left_player.theta,2*np.pi)
+            t1 = np.min([t1, 2*np.pi-t1])
+            t2 = np.remainder(self.right_player.theta_mesured,2*np.pi)
+            t2 = np.min([t2, 2*np.pi-t2])
+            x = np.abs(t1-t2)
+            P = (1 + np.cos(x))/2
         elif pose == 'right':
-            P = (1 + np.cos(self.left_player.theta_mesured - self.right_player.theta))/2
+            t1 = np.remainder(self.left_player.theta_mesured,2*np.pi)
+            t1 = np.min([t1, 2*np.pi-t1])
+            t2 = np.remainder(self.right_player.theta,2*np.pi)
+            t2 = np.min([t2, 2*np.pi-t2])
+            x = np.abs(t1-t2)
+            P = (1 + np.cos(x))/2
             
         return P
     
     def classical_correlation(self, pose):
         if pose == 'left':
-            P = (1 - (self.left_player.theta - self.right_player.theta_mesured)/np.pi)
+            t1 = np.remainder(self.left_player.theta,2*np.pi)
+            t2 = np.remainder(self.right_player.theta_mesured,2*np.pi)
+            x = np.abs(t1-t2)
+            x = np.min([x, 2*np.pi-x])
+            P = 1 - x/np.pi
         elif pose == 'right':
-            P = (1 - (self.left_player.theta_mesured - self.right_player.theta)/np.pi)
+            t1 = np.remainder(self.left_player.theta_mesured,2*np.pi)
+            t2 = np.remainder(self.right_player.theta,2*np.pi)
+            x = np.abs(t1-t2)
+            x = np.min([x, 2*np.pi-x])
+            P = 1 - x/np.pi
             
         return P
         
