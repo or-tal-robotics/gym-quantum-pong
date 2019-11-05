@@ -10,13 +10,14 @@ HEIGHT, WIDTH, N_CHANNELS = 100, 100, 1
 
 class QuantumPongEnv(gym.Env):
     metadata = {'render.modes': ['human']}
-    def __init__(self):
+    def __init__(self, mode):
         self.action_space = spaces.MultiDiscrete([N_DISCRETE_ACTIONS,N_DISCRETE_ACTIONS])
         self.observation_space = spaces.Box(low=0, high=255, shape=
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
-        self.QP = QuantumPong()
+        
         self.done = False
-        self.mode = 0
+        self.mode = mode
+        self.QP = QuantumPong(mode = self.mode)
         self.MAX_STEPS = 20000
         self.step_count = 0
         
@@ -34,7 +35,7 @@ class QuantumPongEnv(gym.Env):
         
 
     def reset(self):
-        self.QP = QuantumPong()
+        self.QP = QuantumPong(mode = self.mode)
         self.QP._update_board()
         self.done = False
         self.reward = [0,0]

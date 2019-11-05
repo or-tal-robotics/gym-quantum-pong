@@ -66,9 +66,9 @@ class QuantumPong():
     
     def classical_correlation(self, pose):
         if pose == 'left':
-            P = (1 + np.cos(self.left_player.theta - self.right_player.theta_mesured))/2
+            P = (1 - (self.left_player.theta - self.right_player.theta_mesured)/np.pi)
         elif pose == 'right':
-            P = (1 + np.cos(self.left_player.theta_mesured - self.right_player.theta))/2
+            P = (1 - (self.left_player.theta_mesured - self.right_player.theta)/np.pi)
             
         return P
         
