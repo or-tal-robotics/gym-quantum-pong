@@ -5,7 +5,7 @@ from gym.utils import seeding
 from gym_quantum_pong.envs.quantum_pong import QuantumPong
 N_DISCRETE_ACTIONS = 6
 PI = np.pi
-HEIGHT, WIDTH, N_CHANNELS = 84, 84, 1
+HEIGHT, WIDTH, N_CHANNELS = 100, 100, 1
 
 
 class QuantumPongEnv(gym.Env):
@@ -14,11 +14,6 @@ class QuantumPongEnv(gym.Env):
         self.action_space = spaces.MultiDiscrete([N_DISCRETE_ACTIONS,N_DISCRETE_ACTIONS])
         self.observation_space = spaces.Box(low=0, high=255, shape=
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
-        self.action_dictionary = {
-                0: [0,0],
-                1: [3,0],
-                2: [-3,0],
-                3: [0,1]}
         self.QP = QuantumPong()
         self.done = False
         self.mode = 0
@@ -50,48 +45,36 @@ class QuantumPongEnv(gym.Env):
         if self.done == True:
             self.__init__()
         reward = [0,0]
-        score, observation, self.done, hit, win = self.QP.step(self.action_dictionary[action[0]], self.action_dictionary[action[1]])
+        score, observation, self.done, hit, win = self.QP.step(action[0], action[1])
         observation = np.expand_dims(observation, axis=2).astype(np.uint8)
         if hit == 1:
-           if self.mode == 0:
-                reward = [1,0.1]
-           elif self.mode == 1:
-                reward = [1,1]
+            reward = [1,0.1]
         if hit == -1:
-           if self.mode == 0:
-                reward = [0.1,1]
-           elif self.mode == 1:
-                reward = [1,1]
+           reward = [0.1,1]
         if win == 1:
-           if self.mode == 0:
-                reward = [-0.1,-1]
-           elif self.mode == 1:
-                reward = [-1,-1]
+           reward = [-0.1,-1]
         if win == -1:
-           if self.mode == 0:
-                reward = [-1,-0.1]
-           elif self.mode == 1:
-                reward = [-1,-1]
+           reward = [-1,-0.1]
         self.step_count += 1
         if self.step_count > self.MAX_STEPS:
             self.done = True
             print("Game over!, too many steps!")
         return observation, np.float32(reward), self.done, {}
     
-    def statistics(self):
-        M = np.array(self.QP.quantum_memory)
-        if M.shape[0] > 10:
-            C = np.empty((2,2))
-            C[0,0] = np.mean((M[:,0]==0)*(M[:,1]==0))
-            C[0,1] = np.mean((M[:,0]==0)*(M[:,1]==1))
-            C[1,0] = np.mean((M[:,0]==1)*(M[:,1]==0))
-            C[1,1] = np.mean((M[:,0]==1)*(M[:,1]==1))
-            qs = self.QP.QuantumState_memory
-            qst = self.QP.QuantumState_memory_total/self.step_count
-            return C, qs, qst
-        else:
-            return None, None, None
-    
+#    def statistics(self):
+#        M = np.array(self.QP.quantum_memory)
+#        if M.shape[0] > 10:
+#            C = np.empty((2,2))
+#            C[0,0] = np.mean((M[:,0]==0)*(M[:,1]==0))
+#            C[0,1] = np.mean((M[:,0]==0)*(M[:,1]==1))
+#            C[1,0] = np.mean((M[:,0]==1)*(M[:,1]==0))
+#            C[1,1] = np.mean((M[:,0]==1)*(M[:,1]==1))
+#            qs = self.QP.QuantumState_memory
+#            qst = self.QP.QuantumState_memory_total/self.step_count
+#            return C, qs, qst
+#        else:
+#            return None, None, None
+#    
 
          
     
