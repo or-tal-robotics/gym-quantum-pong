@@ -58,9 +58,9 @@ class QuantumPongEnv(gym.Env):
            reward = [-1,-0.1]
            
         if action[0] == 0 or action[0] == 1:
-            reward[0] -= 0.01
+            reward[0] -= 0.001
         if action[1] == 0 or action[1] == 1:
-            reward[1] -= 0.01
+            reward[1] -= 0.001
             
         self.step_count += 1
         if self.step_count > self.MAX_STEPS:

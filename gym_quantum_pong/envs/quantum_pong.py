@@ -40,7 +40,7 @@ class Ball():
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (60,60,40), V = 2, n_rounds = 21, res = 0.2, mode="quantum"):
+    def __init__(self, n_players = 1, board_size = (60,60,50), V = 2, n_rounds = 21, res = 0.2, mode="quantum"):
         self.bat_size = 6
         self.board_size = board_size
         self.board = np.zeros((int(board_size[0]/res),int(board_size[1]/res)))
@@ -77,15 +77,17 @@ class QuantumPong():
     def classical_correlation(self, pose):
         if pose == 'left':
             t1 = np.remainder(self.left_player.theta,2*np.pi)
+            t1 = np.min([t1, 2*np.pi-t1])
             t2 = np.remainder(self.right_player.theta_mesured,2*np.pi)
+            t2 = np.min([t2, 2*np.pi-t2])
             x = np.abs(t1-t2)
-            x = np.min([x, 2*np.pi-x])
             P = 1 - x/np.pi
         elif pose == 'right':
             t1 = np.remainder(self.left_player.theta_mesured,2*np.pi)
+            t1 = np.min([t1, 2*np.pi-t1])
             t2 = np.remainder(self.right_player.theta,2*np.pi)
+            t2 = np.min([t2, 2*np.pi-t2])
             x = np.abs(t1-t2)
-            x = np.min([x, 2*np.pi-x])
             P = 1 - x/np.pi
             
         return P
@@ -107,6 +109,8 @@ class QuantumPong():
         Bx = int(round(self.ball.x/self.res))
         By = int(round(self.ball.y/self.res))
         cv2.circle(self.board,(By, Bx), 10, (255,255,255), -1)
+        
+        self.board[50:-50,50:-50] = 0
 
         
         for ii in range(-round(self.bat_size/self.res),round(self.bat_size/self.res)+1):
@@ -127,6 +131,7 @@ class QuantumPong():
         x_tor = np.array([round(self.right_player.x/self.res), round(self.right_player.x/self.res) + (5/self.res)*np.sin(np.deg2rad(self.right_player.theta))]).astype(np.int)
         y_tor = np.array([round(self.right_player.y/self.res), round(self.right_player.y/self.res) + (5/self.res)*np.cos(np.deg2rad(self.right_player.theta))]) .astype(np.int)
         self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
+        
 #        
         
                 
