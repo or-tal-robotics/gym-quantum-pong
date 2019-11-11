@@ -2,6 +2,12 @@ import numpy as np
 import time
 import cv2
 
+def sample_angle():
+    d = np.random.binomial(1,0.5)
+    theta = np.random.uniform(np.pi/12, np.pi - np.pi/12) * (-1)**d 
+    return theta
+    
+
 class Player():
     def __init__(self, x, board_size, bat_size, dtheta = np.pi/12, dy = 3):
         self.x = x
@@ -47,7 +53,7 @@ class QuantumPong():
         self.board_size = board_size
         self.board = np.zeros((int(board_size[0]/res),int(board_size[1]/res)))
         self.res = res
-        self.ball = Ball(x = board_size[0]/2, y = board_size[1]/2, V = V, theta = np.random.uniform(np.pi/6, np.pi/2 - np.pi/6))
+        self.ball = Ball(x = board_size[0]/2, y = board_size[1]/2, V = V, theta = sample_angle())
         self.mode = mode
         self.left_player = Player(6, board_size, self.bat_size)
         self.right_player = Player(board_size[1] - 6, board_size, self.bat_size)
@@ -140,8 +146,8 @@ class QuantumPong():
         self.ball.visible -= 20 
             
         # --- Ball --- #
-        if self.ball.visible < 50:
-            self.ball.visible = 50
+        if self.ball.visible < 0:
+            self.ball.visible = 0
             
         if self.ball.y > self._height(self.ball.x):
             self.ball.y = self._height(self.ball.x)
@@ -178,7 +184,7 @@ class QuantumPong():
         elif self.ball.x <= self.left_player.x - 3:
             self.ball.x = self.board_size[1]/2
             self.ball.y = self.board_size[0]/2
-            self.ball.theta = np.random.uniform(np.pi/6, np.pi/2 - np.pi/6)
+            self.ball.theta = sample_angle()
             self.ball.visible = 255
         
     
@@ -204,7 +210,7 @@ class QuantumPong():
         elif self.ball.x >= self.right_player.x + 3:
             self.ball.x = self.board_size[1]/2
             self.ball.y = self.board_size[0]/2
-            self.ball.theta = np.random.uniform(np.pi/6, np.pi/2 - np.pi/6)
+            self.ball.theta = sample_angle()
             self.ball.visible = 255
                 
         
