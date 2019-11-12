@@ -154,12 +154,12 @@ class QuantumPong():
             
         if self.ball.y > self._height(self.ball.x):
             self.ball.y = self._height(self.ball.x)
-            self.ball.theta = - self.ball.theta - 2*self.board_angle + np.random.normal(0,0.1)
+            self.ball.theta = - self.ball.theta - 2*self.board_angle
             
             
         if self.ball.y < 1:
             self.ball.y = 1
-            self.ball.theta = - self.ball.theta + np.random.normal(0,0.1)
+            self.ball.theta = - self.ball.theta
             
        
                         
@@ -213,7 +213,7 @@ class QuantumPong():
             self.ball.visible = 255
                 
            
-        elif self.ball.x >= self.right_player.x and self.ball.x < self.right_player.x - 2 and (self.ball.y < self.right_player.y - self.bat_size - 1 or self.ball.y < self.right_player.y + self.bat_size + 1):
+        elif self.ball.x < self.right_player.x and self.ball.x >= self.right_player.x - 2 and (self.ball.y < self.right_player.y - self.bat_size - 1 or self.ball.y > self.right_player.y + self.bat_size + 1):
             self.ball.visible = 255
             
        
