@@ -4,7 +4,10 @@ import cv2
 
 def sample_angle():
     d = np.random.binomial(1,0.5)
-    theta = np.random.uniform(np.pi/12, np.pi - np.pi/12) * (-1)**d 
+    if d==1:
+        theta = np.random.uniform(3*np.pi/4, 1.5*np.pi - np.pi/4)  
+    else:
+        theta = np.random.uniform(7*np.pi/4, 2.5*np.pi - np.pi/4)  
     return theta
     
 
@@ -151,12 +154,12 @@ class QuantumPong():
             
         if self.ball.y > self._height(self.ball.x):
             self.ball.y = self._height(self.ball.x)
-            self.ball.theta = - self.ball.theta - 2*self.board_angle
+            self.ball.theta = - self.ball.theta - 2*self.board_angle + np.random.normal(0,0.1)
             
             
         if self.ball.y < 1:
             self.ball.y = 1
-            self.ball.theta = - self.ball.theta
+            self.ball.theta = - self.ball.theta + np.random.normal(0,0.1)
             
        
                         
@@ -172,20 +175,20 @@ class QuantumPong():
             else:
                 self.ball.theta = np.pi + self.ball.theta
                 self.ball.polarization = self.left_player.theta + np.pi/2
-                
         
-                
-        elif self.ball.x <= self.left_player.x and self.ball.x > self.left_player.x - 3:
+        elif self.ball.x <= self.left_player.x:
             self.right_player.score += 1
             self.round += 1
             win = -1
-            self.ball.visible = 255
-            
-        elif self.ball.x <= self.left_player.x - 3:
             self.ball.x = self.board_size[1]/2
             self.ball.y = self.board_size[0]/2
             self.ball.theta = sample_angle()
             self.ball.visible = 255
+                
+        elif self.ball.x <= self.left_player.x + 2 and self.ball.x > self.left_player.x and (self.ball.y < self.left_player.y - self.bat_size - 1 or self.ball.y > self.left_player.y + self.bat_size + 1):
+            self.ball.visible = 255
+            
+        
         
     
                 
@@ -200,18 +203,20 @@ class QuantumPong():
                 self.ball.theta = np.pi + self.ball.theta
                 self.ball.polarization = self.right_player.theta + np.pi/2
                 
-           
-        elif self.ball.x >= self.right_player.x and self.ball.x < self.right_player.x + 3:
+        elif self.ball.x >= self.right_player.x:
             self.left_player.score += 1
             self.round += 1
             win = 1
-            self.ball.visible = 255
-            
-        elif self.ball.x >= self.right_player.x + 3:
             self.ball.x = self.board_size[1]/2
             self.ball.y = self.board_size[0]/2
             self.ball.theta = sample_angle()
             self.ball.visible = 255
+                
+           
+        elif self.ball.x >= self.right_player.x and self.ball.x < self.right_player.x - 2 and (self.ball.y < self.right_player.y - self.bat_size - 1 or self.ball.y < self.right_player.y + self.bat_size + 1):
+            self.ball.visible = 255
+            
+       
                 
         
         if self.round == 21:
