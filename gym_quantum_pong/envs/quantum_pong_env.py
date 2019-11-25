@@ -20,17 +20,15 @@ class QuantumPongEnv(gym.Env):
         self.QP = QuantumPong(mode = self.mode)
         self.MAX_STEPS = 20000
         self.step_count = 0
+        self.win = 0
         
     def get_reward(self):
         reward = [0,0]
-        if self.QP.ball_pos[1] > self.QP.bat_pos_B[1]:
-            reward = [0,-1]
-        if self.QP.ball_pos[1] < self.QP.bat_pos_A[1]:
-            reward = [-1,0]   
-        if self.QP.ball_pos[0] >= self.QP.bat_pos_A[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_A[0] + 5 and self.QP.ball_pos[1] <= self.QP.bat_pos_A[1] :
-            reward = [1,0]
-        if self.QP.ball_pos[0] >= self.QP.bat_pos_B[0] - 5 and self.QP.ball_pos[0] <= self.QP.bat_pos_B[0] + 5 and self.QP.ball_pos[1] >= self.QP.bat_pos_B[1] :
-            reward = [0,1]
+        if self.win == 1:
+            reward = [1,1]
+        elif self.win == -1:
+            reward = [-1,-1]
+        
         return reward
         
 
@@ -40,48 +38,27 @@ class QuantumPongEnv(gym.Env):
         self.done = False
         self.reward = [0,0]
         self.step_count = 0
-        return np.expand_dims(self.QP.board, axis=2).astype(np.uint8)
+        return [np.expand_dims(self.QP.board, axis=2).astype(np.uint8), np.expand_dims(self.QP.board, axis=2).astype(np.uint8)]
         
     def step(self, action):
         if self.done == True:
             self.__init__()
         reward = [0,0]
-        score, observation, self.done, hit, win = self.QP.step(action[0], action[1])
-        observation = np.expand_dims(observation, axis=2).astype(np.uint8)
-        if hit == 1:
-            reward = [1,0.1]
-        if hit == -1:
-           reward = [0.1,1]
-        if win == 1:
-           reward = [-0.1,-1]
-        if win == -1:
-           reward = [-1,-0.1]
-           
-        if action[0] == 0 or action[0] == 1:
-            reward[0] -= 0.001
-        if action[1] == 0 or action[1] == 1:
-            reward[1] -= 0.001
+        score, observation, self.done, hit, self.win = self.QP.step(action[0], action[1])
+        observation_right = np.expand_dims(observation[0], axis=2).astype(np.uint8)
+        observation_left = np.expand_dims(observation[1], axis=2).astype(np.uint8)
+        if self.win == 1:
+            reward = [1,1]
+        elif self.win == -1:
+            reward = [-1,-1]
             
         self.step_count += 1
         if self.step_count > self.MAX_STEPS:
             self.done = True
             print("Game over!, too many steps!")
-        return observation, np.float32(reward), self.done, {}
+        return [observation_right, observation_left], np.float32(reward), self.done, {}
     
-#    def statistics(self):
-#        M = np.array(self.QP.quantum_memory)
-#        if M.shape[0] > 10:
-#            C = np.empty((2,2))
-#            C[0,0] = np.mean((M[:,0]==0)*(M[:,1]==0))
-#            C[0,1] = np.mean((M[:,0]==0)*(M[:,1]==1))
-#            C[1,0] = np.mean((M[:,0]==1)*(M[:,1]==0))
-#            C[1,1] = np.mean((M[:,0]==1)*(M[:,1]==1))
-#            qs = self.QP.QuantumState_memory
-#            qst = self.QP.QuantumState_memory_total/self.step_count
-#            return C, qs, qst
-#        else:
-#            return None, None, None
-#    
+    
 
          
     
