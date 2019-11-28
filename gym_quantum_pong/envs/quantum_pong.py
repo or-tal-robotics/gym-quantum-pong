@@ -148,6 +148,7 @@ class QuantumPong():
         self.V = V
         self._reset_ball()
         self.stat = Stats()
+        self.wall_mem = 0
         
     def _reset_ball(self):
         self.ball = Ball(x = self.board_size[1] - 6, y = self.board_size[0]/2, V = self.V, theta = sample_angle())
@@ -299,6 +300,12 @@ class QuantumPong():
         if self.ball.y < 1:
             self.ball.y = 1
             self.ball.theta = - self.ball.theta
+            if self.wall_mem == 0:
+                self.wall_mem = 1
+            elif self.wall_mem == 1:
+                self.wall_mem = 0
+                self.ball.polarization = self.ball.polarization + np.pi/4 
+            
             
        
                         
@@ -333,12 +340,13 @@ class QuantumPong():
     
                 
         if self.ball.x >= self.right_player.x :
+            self.wall_mem = 0
             self.ball.x = self.right_player.x
             hit = -1
             p = 0.5
             self.right_player.crystal_state = self._right_player_mesurment()
             self.stat.right_player_crystal_state.append(self.right_player.crystal_state)
-            g = np.cos(self.ball.polarization - self.right_player.crystal_state)
+            g = np.abs(np.cos(self.ball.polarization - self.right_player.crystal_state))
             if np.random.binomial(1,g) == 1:
                 win = 1
                 self.round += 1
@@ -352,6 +360,7 @@ class QuantumPong():
                 win = -1
                 self._reset_ball()
                 #print("Lost!")
+            
             self.stat.win.append(win)
                 
 
