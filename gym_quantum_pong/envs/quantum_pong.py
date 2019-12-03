@@ -4,8 +4,10 @@ import cv2
 import pandas as pd
 import os
 # ---- Globals ---- #
-Pauli_x = np.array([[0,1],[1,0]])
-Pauli_z = np.array([[1,0],[0,-1]])
+Pauli_x = np.array([[0,1],[1,0]], dtype = np.float32)
+Pauli_z = np.array([[1,0],[0,-1]], dtype = np.float32)
+
+STARTIN_ANGLES = np.array([0.01,0.25,0.5,0.75,1.01], dtype = np.float32)*np.pi
 
 class Stats():
     def __init__(self):
@@ -68,14 +70,14 @@ def sample_angle():
     
 
 class Right_Player():
-    def __init__(self, board_size, dtheta = np.pi/12):
+    def __init__(self, board_size, dtheta = np.pi/12.0):
         self.x = board_size[1] - 6
         self.y = board_size[0]/2
-        self.theta_mes = np.random.uniform(0,2*np.pi)
+        self.theta_mes = np.random.choice(STARTIN_ANGLES)
         self.dtheta = dtheta
         self.score = 0
         self.theta_mesured = 0
-        self.crystal_state = np.random.binomial(1,0.5)*np.pi/2
+        self.crystal_state = np.random.binomial(1,0.5)*np.pi/2.0
         
     def update(self, action):
         if action == 0: # Torret up
@@ -83,17 +85,17 @@ class Right_Player():
         elif action == 1: # Torret up
             self.theta_mes -= self.dtheta
         
-        if self.theta_mes>2*np.pi: self.theta_mes = 2*np.pi
-        if self.theta_mes<0: self.theta_mes = 0
+#        if self.theta_mes>2*np.pi: self.theta_mes = 2*np.pi
+#        if self.theta_mes<0: self.theta_mes = 0
     
             
 
 class Left_Player():
-    def __init__(self, board_size, dtheta_ent = np.pi/24, dtheta_mes = np.pi/12):
+    def __init__(self, board_size, dtheta_ent = np.pi/24.0, dtheta_mes = np.pi/12.0):
         self.x = 6
         self.y = board_size[0]/2
-        self.theta_ent = np.random.uniform(0,2*np.pi)
-        self.theta_mes = np.random.uniform(0,2*np.pi)
+        self.theta_ent = np.random.choice(STARTIN_ANGLES)
+        self.theta_mes = np.random.choice(STARTIN_ANGLES)
         self.dtheta_ent = dtheta_ent
         self.dtheta_mes = dtheta_mes
         self.score = 0
@@ -112,8 +114,8 @@ class Left_Player():
             
        # if self.theta_ent>np.pi/4: self.theta_ent = np.pi/4
        # if self.theta_ent<0: self.theta_ent = 0
-        if self.theta_mes>2*np.pi: self.theta_mes = 2*np.pi
-        if self.theta_mes<0: self.theta_mes = 0
+#        if self.theta_mes>2*np.pi: self.theta_mes = 2*np.pi
+#        if self.theta_mes<0: self.theta_mes = 0
             
 class Ball():
     def __init__(self,x, y, V, theta):
@@ -123,14 +125,14 @@ class Ball():
         self.theta = theta
         self.quantum_hits = 0
         self.polarization = np.random.uniform(0.0, np.pi)
-        self.psi = np.array([1,0,0,0])
+        self.psi = np.array([1,1,1,1], dtype = np.float32)/2.0
         self.visible = 255
     
 
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (60,72,60), V = 2, n_rounds = 21, res = 0.2, mode="quantum"):
+    def __init__(self, n_players = 1, board_size = (60,72,60), V = 2, n_rounds = 21, res = 0.2,max_rounds = 30, mode="quantum"):
         self.bat_size = 25
         self.board_size = board_size
         self.board = np.zeros((int(board_size[0]/res),int(board_size[1]/res)))
@@ -149,6 +151,7 @@ class QuantumPong():
         self._reset_ball()
         self.stat = Stats()
         self.wall_mem = 0
+        self.max_rounds = max_rounds
         
     def _reset_ball(self):
         self.ball = Ball(x = self.board_size[1] - 6, y = self.board_size[0]/2, V = self.V, theta = sample_angle())
@@ -159,7 +162,7 @@ class QuantumPong():
         self.stat.left_player_theta_ent.append(self.left_player.theta_ent)
         self.stat.ball_psi_left.append(self.ball.psi)
         #print("a:"+str(a))
-        b = np.eye(2)
+        b = np.eye(2).astype(np.float32)
         #print("ball.psi:"+str(self.ball.psi))
         g = np.trace((np.outer(self.ball.psi,self.ball.psi)).dot(np.kron(a,b)))
         p = (1 + g)/2.0
@@ -174,13 +177,13 @@ class QuantumPong():
         if crystal_state == 0:
             psi = (np.outer(u[:,0],u[:,0]) + np.outer(u[:,1],u[:,1])).dot(self.ball.psi)
             #print("psi:"+str(psi))
-            psi = psi + np.random.normal(0,0.0001,4)
+            #psi = psi + np.random.normal(0,0.0001,4)
             psi = psi/np.linalg.norm(psi)
             #print("psi_n:"+str(psi))
         else:
             psi = (np.outer(u[:,2],u[:,2]) + np.outer(u[:,3],u[:,3])).dot(self.ball.psi)
             #print("psi:"+str(psi))
-            psi = psi + np.random.normal(0,0.0001,4)
+            #psi = psi + np.random.normal(0,0.0001,4)
             psi = psi/np.linalg.norm(psi)
             #print("psi_n:"+str(psi))
         
@@ -188,7 +191,7 @@ class QuantumPong():
     
     def _right_player_mesurment(self):
         a = np.sin(self.right_player.theta_mes)*Pauli_z + np.cos(self.right_player.theta_mes)*Pauli_x
-        b = np.eye(2)
+        b = np.eye(2).astype(np.float32)
         g = np.trace((np.outer(self.ball.psi,self.ball.psi)).dot(np.kron(a,b)))
         
         self.stat.right_player_theta_mes.append(self.right_player.theta_mes)
@@ -202,7 +205,7 @@ class QuantumPong():
         return  crystal_state 
     
     def _update_psi(self):
-        return np.array([np.cos(self.left_player.theta_ent),0,0,np.sin(self.left_player.theta_ent)])
+        return np.array([np.cos(self.left_player.theta_ent),0.0,0.0,np.sin(self.left_player.theta_ent)])
     
    
         
@@ -247,8 +250,8 @@ class QuantumPong():
         y_tor = np.array([round(self.left_player.y/self.res)+50, round(self.left_player.y/self.res)+50 + (5/self.res)*np.cos((self.left_player.theta_mes))]) .astype(np.int)
         self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
         
-        x_tor = np.array([round(self.left_player.x/self.res), round(self.left_player.x/self.res) + (5/self.res)*np.sin((self.left_player.theta_ent))]).astype(np.int)
-        y_tor = np.array([round(self.left_player.y/self.res)-50, round(self.left_player.y/self.res)-50 + (5/self.res)*np.cos((self.left_player.theta_ent))]) .astype(np.int)
+        x_tor = np.array([round(self.left_player.x/self.res), round(self.left_player.x/self.res) + (8/self.res)*np.sin((self.left_player.theta_ent))]).astype(np.int)
+        y_tor = np.array([round(self.left_player.y/self.res)-50, round(self.left_player.y/self.res)-50 + (8/self.res)*np.cos((self.left_player.theta_ent))]) .astype(np.int)
         self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
         
         
@@ -368,7 +371,7 @@ class QuantumPong():
        
                 
         
-        if self.round == 30:
+        if self.round == self.max_rounds:
             self.done = True
             self.n_steps = 0
             self.round = 0
