@@ -3,11 +3,12 @@ import time
 import cv2
 import pandas as pd
 import os
+import csv
 # ---- Globals ---- #
 Pauli_x = np.array([[0,1],[1,0]], dtype = np.float32)
 Pauli_z = np.array([[1,0],[0,-1]], dtype = np.float32)
 
-STARTIN_ANGLES = np.array([0.01,0.25,0.5,0.75,1.01], dtype = np.float32)*np.pi
+STARTIN_ANGLES = (np.array([0.0,0.25,0.5,0.75,1.0], dtype = np.float32) + 0.01)*np.pi
 
 class Stats():
     def __init__(self):
@@ -24,6 +25,12 @@ class Stats():
         self.ball_thata_right = []
         self.left_player_crystal_state_p = []
         self.right_player_crystal_state_p = []
+        self.u1 = []
+        self.u2 = []
+        self.u3 = []
+        self.u4 = []
+        
+        self.a_left = []
         
 def save_stat(stat, file_path, ex, f = None):
     data = {'left_player_theta_mes': stat.left_player_theta_mes,
@@ -39,6 +46,11 @@ def save_stat(stat, file_path, ex, f = None):
             'ball_thata_right': stat.ball_thata_right,
             'left_player_crystal_state_p': stat.left_player_crystal_state_p,
             'right_player_crystal_state_p': stat.right_player_crystal_state_p,
+            'a_left': stat.a_left,
+            'u1': stat.u1,
+            'u2': stat.u2,
+            'u3': stat.u3,
+            'u4': stat.u4
             }
     df = pd.DataFrame(data, columns= ['left_player_theta_mes',
                                       'left_player_theta_ent',
@@ -51,11 +63,16 @@ def save_stat(stat, file_path, ex, f = None):
                                       'ball_thata_left', 
                                       'ball_thata_right',
                                       'left_player_crystal_state_p',
-                                      'right_player_crystal_state_p'])
+                                      'right_player_crystal_state_p',
+                                      'a_left',
+                                      'u1',
+                                      'u2',
+                                      'u3',
+                                      'u4'])
     if ex==False:
-        df.to_csv(file_path, sep='\t')
+        df.to_csv(file_path, sep="\t", quoting=csv.QUOTE_NONE, quotechar="",  escapechar="\\")
     else:
-        df.to_csv(f, sep='\t', header=False)
+        df.to_csv(f, sep="\t", quoting=csv.QUOTE_NONE, quotechar="",  escapechar="\\", header=False)
         
         
         
@@ -158,6 +175,7 @@ class QuantumPong():
         
     def _left_player_mesurment(self):
         a = np.sin(self.left_player.theta_mes)*Pauli_z + np.cos(self.left_player.theta_mes)*Pauli_x
+        self.stat.a_left.append(a.reshape((-1)))
         self.stat.left_player_theta_mes.append(self.left_player.theta_mes)
         self.stat.left_player_theta_ent.append(self.left_player.theta_ent)
         self.stat.ball_psi_left.append(self.ball.psi)
@@ -168,24 +186,42 @@ class QuantumPong():
         p = (1 + g)/2.0
         self.stat.left_player_crystal_state_p.append(p)
         crystal_state = np.random.binomial(1,p)*np.pi/2
-        lamda, u = np.linalg.eig(np.kron(a,b))
+        self.stat.left_player_crystal_state.append(crystal_state)
+#        lamda, u = np.linalg.eig(np.kron(a,b))
+        
+        
+        lamda, u = np.linalg.eig(a)
         idx = lamda.argsort()[::-1]
+        
         idx = np.flip(idx)
         lamda = lamda[idx]
         u = u[:,idx]
+        u1 = np.kron(u[:,0],np.array([1,0]))
+        u2 = np.kron(u[:,0],np.array([0,1]))
+        u3 = np.kron(u[:,1],np.array([1,0]))
+        u4 = np.kron(u[:,1],np.array([0,1]))
+        
+        
+        
+        #print(np.linalg.det(u))
+        self.stat.u1.append(u1)
+        self.stat.u2.append(u2)
+        self.stat.u3.append(u3)
+        self.stat.u4.append(u4)
         
         if crystal_state == 0:
-            psi = (np.outer(u[:,0],u[:,0]) + np.outer(u[:,1],u[:,1])).dot(self.ball.psi)
+            psi = (np.outer(u1,u1) + np.outer(u2,u2)).dot(self.ball.psi)
             #print("psi:"+str(psi))
             #psi = psi + np.random.normal(0,0.0001,4)
             psi = psi/np.linalg.norm(psi)
             #print("psi_n:"+str(psi))
         else:
-            psi = (np.outer(u[:,2],u[:,2]) + np.outer(u[:,3],u[:,3])).dot(self.ball.psi)
+            psi = (np.outer(u3,u3) + np.outer(u4,u4)).dot(self.ball.psi)
             #print("psi:"+str(psi))
             #psi = psi + np.random.normal(0,0.0001,4)
             psi = psi/np.linalg.norm(psi)
             #print("psi_n:"+str(psi))
+        self.stat.ball_psi_right.append(psi)
         
         return  crystal_state , psi
     
@@ -321,8 +357,8 @@ class QuantumPong():
             p = 0.5
             self.ball.psi = self._update_psi()
             self.left_player.crystal_state, self.ball.psi = self._left_player_mesurment()
-            self.stat.ball_psi_right.append(self.ball.psi)
-            self.stat.left_player_crystal_state.append(self.left_player.crystal_state)
+            
+            
             if np.random.binomial(1,p) == 1:
                 self.ball.theta = np.pi - self.ball.theta
             else:
