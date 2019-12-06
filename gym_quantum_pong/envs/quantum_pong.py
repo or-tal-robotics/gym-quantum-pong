@@ -228,7 +228,7 @@ class QuantumPong():
     def _right_player_mesurment(self):
         a = np.sin(self.right_player.theta_mes)*Pauli_z + np.cos(self.right_player.theta_mes)*Pauli_x
         b = np.eye(2).astype(np.float32)
-        g = np.trace((np.outer(self.ball.psi,self.ball.psi)).dot(np.kron(a,b)))
+        g = np.trace((np.outer(self.ball.psi,self.ball.psi)).dot(np.kron(b,a)))
         
         self.stat.right_player_theta_mes.append(self.right_player.theta_mes)
         
