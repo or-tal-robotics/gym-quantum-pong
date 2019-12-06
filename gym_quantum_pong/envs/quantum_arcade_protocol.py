@@ -5,8 +5,11 @@
 3. [c00 + c01 + c10 - c11], Where the left player have no controll over the entaglement (theta_ent = pi/6)
 4. [c00 + c01 + c10 - c11], Where the left player have no controll over the entaglement (theta_ent = 0)
 
+
 1. [c00 + c01 + c10 + c11], Where the left player have full controll over the entaglement (theta_ent)
 2. [c00 + c01 + c10 + c11], Where the left player have no controll over the entaglement (theta_ent = pi/4)
 3. [c00 + c01 + c10 + c11], Where the left player have no controll over the entaglement (theta_ent = pi/6)
 4. [c00 + c01 + c10 + c11], Where the left player have no controll over the entaglement (theta_ent = 0)
+
+1. Right player vision: Ghost ball, simulating the two possible state for the ball when is proceeding into the left player.
 
