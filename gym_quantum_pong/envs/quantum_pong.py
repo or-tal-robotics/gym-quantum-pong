@@ -350,7 +350,7 @@ class QuantumPong():
             elif self.wall_mem == 1:
                 self.wall_mem = 0
                 if self.wall_polarization == True:
-                    self.ball.polarization = self.ball.polarization + np.pi/4 
+                    self.ball.polarization = self.ball.polarization + np.pi/2 
             
             
        
