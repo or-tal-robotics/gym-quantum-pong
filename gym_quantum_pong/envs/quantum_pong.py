@@ -152,7 +152,7 @@ class Ball():
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (60,72,60), V = 4, n_rounds = 21, res = 0.2,max_rounds = 150, mode="quantum"):
+    def __init__(self, n_players = 1, board_size = (60,72,60), V = 6, n_rounds = 21, res = 0.2,max_rounds = 200, mode="quantum"):
         self.bat_size = 25
         self.board_size = board_size
         self.board = np.zeros((int(board_size[0]/res),int(board_size[1]/res)))
