@@ -29,6 +29,7 @@ class Stats():
         self.u2 = []
         self.u3 = []
         self.u4 = []
+        self.ball_polarization_left = []
         
         self.a_left = []
         
@@ -50,7 +51,8 @@ def save_stat(stat, file_path, ex, f = None):
             'u1': stat.u1,
             'u2': stat.u2,
             'u3': stat.u3,
-            'u4': stat.u4
+            'u4': stat.u4,
+            'ball_polarization_left': stat.ball_polarization_left
             }
     df = pd.DataFrame(data, columns= ['left_player_theta_mes',
                                       'left_player_theta_ent',
@@ -68,7 +70,8 @@ def save_stat(stat, file_path, ex, f = None):
                                       'u1',
                                       'u2',
                                       'u3',
-                                      'u4'])
+                                      'u4',
+                                      'ball_polarization_left'])
     if ex==False:
         df.to_csv(file_path, sep="\t", quoting=csv.QUOTE_NONE, quotechar="",  escapechar="\\")
     else:
@@ -149,7 +152,7 @@ class Ball():
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (60,72,60), V = 2, n_rounds = 21, res = 0.2,max_rounds = 30, mode="quantum"):
+    def __init__(self, n_players = 1, board_size = (60,72,60), V = 4, n_rounds = 21, res = 0.2,max_rounds = 150, mode="quantum"):
         self.bat_size = 25
         self.board_size = board_size
         self.board = np.zeros((int(board_size[0]/res),int(board_size[1]/res)))
@@ -169,6 +172,7 @@ class QuantumPong():
         self.stat = Stats()
         self.wall_mem = 0
         self.max_rounds = max_rounds
+        self.wall_polarization = True
         
     def _reset_ball(self):
         self.ball = Ball(x = self.board_size[1] - 6, y = self.board_size[0]/2, V = self.V, theta = sample_angle())
@@ -282,13 +286,7 @@ class QuantumPong():
             self.board[ii,0:3] = 200
          
         
-        x_tor = np.array([round(self.left_player.x/self.res), round(self.left_player.x/self.res) + (5/self.res)*np.sin((self.left_player.theta_mes))]).astype(np.int)
-        y_tor = np.array([round(self.left_player.y/self.res)+50, round(self.left_player.y/self.res)+50 + (5/self.res)*np.cos((self.left_player.theta_mes))]) .astype(np.int)
-        self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
         
-        x_tor = np.array([round(self.left_player.x/self.res), round(self.left_player.x/self.res) + (8/self.res)*np.sin((self.left_player.theta_ent))]).astype(np.int)
-        y_tor = np.array([round(self.left_player.y/self.res)-50, round(self.left_player.y/self.res)-50 + (8/self.res)*np.cos((self.left_player.theta_ent))]) .astype(np.int)
-        self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
         
         
        
@@ -300,13 +298,21 @@ class QuantumPong():
         
         
         if np.cos(self.ball.theta)<0:
-            self.right_output_board = self.board.copy()
+            self.right_output_board = np.array(self.board)
         
         
         cv2.circle(self.board,(By, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
-        self.left_output_board = self.board.copy()
         if np.cos(self.ball.theta)>=0:
-            self.right_output_board = self.board.copy()
+            self.right_output_board = np.array(self.board)
+        x_tor = np.array([round(self.left_player.x/self.res), round(self.left_player.x/self.res) + (5/self.res)*np.sin((self.left_player.theta_mes))]).astype(np.int)
+        y_tor = np.array([round(self.left_player.y/self.res)+50, round(self.left_player.y/self.res)+50 + (5/self.res)*np.cos((self.left_player.theta_mes))]) .astype(np.int)
+        self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
+        
+        x_tor = np.array([round(self.left_player.x/self.res), round(self.left_player.x/self.res) + (8/self.res)*np.sin((self.left_player.theta_ent))]).astype(np.int)
+        y_tor = np.array([round(self.left_player.y/self.res)-50, round(self.left_player.y/self.res)-50 + (8/self.res)*np.cos((self.left_player.theta_ent))]) .astype(np.int)
+        self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
+        self.left_output_board = np.array(self.board)
+        
         
 #        
         
@@ -343,7 +349,8 @@ class QuantumPong():
                 self.wall_mem = 1
             elif self.wall_mem == 1:
                 self.wall_mem = 0
-                self.ball.polarization = self.ball.polarization + np.pi/4 
+                if self.wall_polarization == True:
+                    self.ball.polarization = self.ball.polarization + np.pi/4 
             
             
        
@@ -352,6 +359,7 @@ class QuantumPong():
         
         if self.ball.x <= self.left_player.x :
             self.stat.ball_thata_left.append(self.ball.theta)
+            self.stat.ball_polarization_left.append(self.ball.polarization)
             self.ball.x = self.left_player.x
             hit = 1
             p = 0.5
@@ -432,7 +440,7 @@ if __name__ == '__main__':
         done = a[2]
         cv2.imshow("right_output_board",a[1][0]/255)
         cv2.imshow("left_output_board",a[1][1]/255)
-        time.sleep(0.001)
+        time.sleep(0.1)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         
