@@ -419,7 +419,7 @@ class QuantumPong():
                 self.round += 1
                 win = -1
                 self._reset_ball()
-                print("Lost!")
+                #print("Lost!")
             
             self.stat.win.append(win)
                 
