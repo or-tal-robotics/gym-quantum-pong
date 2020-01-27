@@ -334,10 +334,9 @@ class QuantumPong():
         y_tor = np.array([round(self.right_player.y/self.res), round(self.right_player.y/self.res) + (8/self.res)*np.cos((self.right_player.theta_mes2))]) .astype(np.int)
         self.board = cv2.line(self.board,(y_tor[0],x_tor[0] ),(y_tor[1],x_tor[1] ),255,3)
         
-        cv2.circle(self.board,(By, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
-        
-        cv2.circle(self.board,(self.board.shape[1] - By + 1, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
-        
+        #cv2.circle(self.board,(By, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
+        #cv2.circle(self.board,(self.board.shape[1] - By + 1, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
+        cv2.circle(self.board,(round(self.board_size[0]/self.res)//2, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
         
         
         
