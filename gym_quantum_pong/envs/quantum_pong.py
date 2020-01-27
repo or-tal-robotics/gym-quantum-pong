@@ -96,12 +96,13 @@ def sample_angle():
     
 
 class Right_Player():
-    def __init__(self, board_size,  dtheta_ent = np.pi/24.0, dtheta_mes = np.pi/12.0):
+    def __init__(self, board_size,  dtheta_ent = np.pi/2.0, dtheta_mes = np.pi/12.0):
         self.x = board_size[1] - 7
         self.y = board_size[0]/2
         self.theta_mes1 = np.random.choice(STARTIN_ANGLES)
         self.theta_mes2 = np.random.choice(STARTIN_ANGLES)
-        self.theta_ent = np.random.choice(STARTIN_ANGLES)
+        #self.theta_ent = np.random.choice(STARTIN_ANGLES)
+        self.theta_ent = 0.0
         self.dtheta_mes = dtheta_mes
         self.dtheta_ent = dtheta_ent
         self.score = 0
@@ -335,7 +336,7 @@ class QuantumPong():
         
         cv2.circle(self.board,(By, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
         
-        cv2.circle(self.board,(self.board.shape[1] - By, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
+        cv2.circle(self.board,(self.board.shape[1] - By + 1, Bx), 10, (self.ball.visible,self.ball.visible,self.ball.visible), -1)
         
         
         
@@ -463,7 +464,7 @@ if __name__ == '__main__':
         a = QP.step(np.random.choice(5),np.random.choice(5))
         done = a[2]
         cv2.imshow("board",a[1]/255)
-        time.sleep(0.000001)
+        time.sleep(0.1)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         

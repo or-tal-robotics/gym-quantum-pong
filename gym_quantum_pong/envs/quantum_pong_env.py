@@ -55,7 +55,7 @@ class QuantumPongEnv(gym.Env):
         if self.step_count > self.MAX_STEPS:
             self.done = True
             print("Game over!, too many steps!")
-        return observation, np.float32(reward), self.done, {}
+        return observation, np.float32(reward), self.done, hit
     
     
 
