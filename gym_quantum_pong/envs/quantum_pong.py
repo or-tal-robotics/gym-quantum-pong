@@ -96,7 +96,7 @@ def sample_angle():
     
 
 class Right_Player():
-    def __init__(self, board_size,  dtheta_ent = np.pi/2.0, dtheta_mes = np.pi/12.0):
+    def __init__(self, board_size,  dtheta_ent = np.pi/12.0, dtheta_mes = np.pi/12.0):
         self.x = board_size[1] - 7
         self.y = board_size[0]/2
         self.theta_mes1 = np.random.choice(STARTIN_ANGLES)
@@ -169,7 +169,7 @@ class Ball():
 
 
 class QuantumPong():
-    def __init__(self, n_players = 1, board_size = (60,72,60), V = 4, n_rounds = 21, res = 0.2,max_rounds = 200, mode="quantum"):
+    def __init__(self, n_players = 1, board_size = (60,72,60), V = 6, n_rounds = 21, res = 0.2,max_rounds = 200, mode="quantum"):
         self.bat_size = 25
         self.board_size = board_size
         self.board = np.zeros((int(board_size[0]/res),int(board_size[1]/res)))
